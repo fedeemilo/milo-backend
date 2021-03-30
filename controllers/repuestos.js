@@ -25,10 +25,7 @@ module.exports = {
     req.body.images = [];
     req.body.datasheet = [];
 
-    console.log(req.files)
-
     if (req.files) {
-
       // handle images upload
       if (req.files.images) {
         for (let file of req.files.images) {
@@ -110,30 +107,62 @@ module.exports = {
     });
   },
 
-  updateRepuestoById(req, res) {
+  async updateRepuestoById(req, res) {
     let id = req.params.id;
     let body = req.body;
+    req.body.images = [];
+    req.body.datasheet = [];
 
-    Repuesto.findByIdAndUpdate(id, body, { new: true }, (err, repuestoDB) => {
-      if (err) {
-        return res.status(500).json({
-          ok: false,
-          err
-        });
+
+    if (req.files) {
+      // handle images upload
+      if (req.files.images) {
+        for (let file of req.files.images) {
+          let image = await cloudinary.v2.uploader.upload(file.path);
+          body.images.push({
+            url: image.secure_url,
+            public_id: image.public_id
+          });
+        }
       }
 
-      if (!repuestoDB) {
-        return res.status(400).json({
-          ok: false,
-          err
+      // handle datasheet's upload
+      if (req.files.datasheet) {
+        for (let file of req.files.datasheet) {
+          let upload = await cloudinary.v2.uploader.upload(file.path);
+          body.datasheet.push({
+            url: upload.secure_url,
+            public_id: upload.public_id
+          });
+        }
+      }
+    }
+
+    Repuesto.findByIdAndUpdate(
+      id,
+      body,
+      { new: true },
+      (err, repuestoDB) => {
+        if (err) {
+          return res.status(500).json({
+            ok: false,
+            err
+          });
+        }
+
+        if (!repuestoDB) {
+          return res.status(400).json({
+            ok: false,
+            err
+          });
+        }
+
+        res.json({
+          ok: true,
+          repuesto: repuestoDB
         });
       }
-
-      res.json({
-        ok: true,
-        repuesto: repuestoDB
-      });
-    });
+    );
   },
 
   deleteRepuestoById(req, res) {
