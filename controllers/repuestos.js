@@ -111,14 +111,14 @@ module.exports = {
     let id = req.params.id;
     let repuesto = await Repuesto.findById(id);
 
+    console.log(req.files.datasheet)
+
     if (req.body.deleteImages && req.body.deleteImages.length) {
       if (req.body.deleteImages.length > 1) {
         req.body.deleteImages = req.body.deleteImages.split(",");
       } else {
         req.body.deleteImages = req.body.deleteImages.split("");
       }
-
-      console.log(req.body.deleteImages);
 
       let deleteImages = req.body.deleteImages;
 
@@ -134,8 +134,6 @@ module.exports = {
       }
     }
 
-    console.log(req.files);
-
     // if there's new files to  upload
     if (req.files) {
       // check if there are new images
@@ -147,38 +145,41 @@ module.exports = {
             public_id: image.public_id
           });
         }
-      } 
+      }
 
       // check if there's a new datasheet
       if (req.files.datasheet) {
-        let ds = req.files.datasheet;
-        let data = await cloudinary.v2.uploader.upload(ds.path);
-        repuesto.datasheet.push({
-          url: data.secure_url,
-          public_id: data.public_id
-        });
+        if (!repuesto.datasheet.length) {
+          repuesto.datasheet = []
+        }
+        for (const file of req.files.datasheet) {
+          let ds = await cloudinary.v2.uploader.upload(file.path);
+          repuesto.datasheet.push({
+            url: ds.secure_url,
+            public_id: ds.public_id
+          });
+        }       
       }
     }
-
     repuesto.nombre = req.body.nombre;
     repuesto.descripcion = req.body.descripcion;
     repuesto.ubicacion = req.body.ubicacion;
     repuesto.cantidad = req.body.cantidad;
+
+    console.log(repuesto)
 
     try {
       await repuesto.save();
       res.json({
         ok: true,
         repuesto
-      })
+      });
     } catch (error) {
       res.json({
         ok: false,
         error
-      })
+      });
     }
-
-
   },
 
   deleteRepuestoById(req, res) {
