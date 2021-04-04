@@ -17,7 +17,7 @@ let repuestoSchema = new Schema({
     type: String,
     required: [true, "La ubicación del repuesto es obligatoria"]
   },
-  datasheet: [{ url: String, public_id: String }],
+  datasheet: { url: String, public_id: String },
   images: [{ url: String, public_id: String }]
 });
 

@@ -109,60 +109,76 @@ module.exports = {
 
   async updateRepuestoById(req, res) {
     let id = req.params.id;
-    let body = req.body;
-    req.body.images = [];
-    req.body.datasheet = [];
+    let repuesto = await Repuesto.findById(id);
 
-
-    if (req.files) {
-      // handle images upload
-      if (req.files.images) {
-        for (let file of req.files.images) {
-          let image = await cloudinary.v2.uploader.upload(file.path);
-          body.images.push({
-            url: image.secure_url,
-            public_id: image.public_id
-          });
-        }
+    if (req.body.deleteImages && req.body.deleteImages.length) {
+      if (req.body.deleteImages.length > 1) {
+        req.body.deleteImages = req.body.deleteImages.split(",");
+      } else {
+        req.body.deleteImages = req.body.deleteImages.split("");
       }
 
-      // handle datasheet's upload
-      if (req.files.datasheet) {
-        for (let file of req.files.datasheet) {
-          let upload = await cloudinary.v2.uploader.upload(file.path);
-          body.datasheet.push({
-            url: upload.secure_url,
-            public_id: upload.public_id
-          });
+      console.log(req.body.deleteImages);
+
+      let deleteImages = req.body.deleteImages;
+
+      for (const public_id of deleteImages) {
+        await cloudinary.v2.uploader.destroy(public_id);
+
+        for (const image of repuesto.images) {
+          if (image.public_id === public_id) {
+            let index = repuesto.images.indexOf(image);
+            repuesto.images.splice(index, 1);
+          }
         }
       }
     }
 
-    Repuesto.findByIdAndUpdate(
-      id,
-      body,
-      { new: true },
-      (err, repuestoDB) => {
-        if (err) {
-          return res.status(500).json({
-            ok: false,
-            err
+    console.log(req.files);
+
+    // if there's new files to  upload
+    if (req.files) {
+      // check if there are new images
+      if (req.files.images) {
+        for (const file of req.files.images) {
+          let image = await cloudinary.v2.uploader.upload(file.path);
+          repuesto.images.push({
+            url: image.secure_url,
+            public_id: image.public_id
           });
         }
+      } 
 
-        if (!repuestoDB) {
-          return res.status(400).json({
-            ok: false,
-            err
-          });
-        }
-
-        res.json({
-          ok: true,
-          repuesto: repuestoDB
+      // check if there's a new datasheet
+      if (req.files.datasheet) {
+        let ds = req.files.datasheet;
+        let data = await cloudinary.v2.uploader.upload(ds.path);
+        repuesto.datasheet.push({
+          url: data.secure_url,
+          public_id: data.public_id
         });
       }
-    );
+    }
+
+    repuesto.nombre = req.body.nombre;
+    repuesto.descripcion = req.body.descripcion;
+    repuesto.ubicacion = req.body.ubicacion;
+    repuesto.cantidad = req.body.cantidad;
+
+    try {
+      await repuesto.save();
+      res.json({
+        ok: true,
+        repuesto
+      })
+    } catch (error) {
+      res.json({
+        ok: false,
+        error
+      })
+    }
+
+
   },
 
   deleteRepuestoById(req, res) {

@@ -20,8 +20,8 @@ let storage = multer.diskStorage({
 });
 
 const upload = multer({ storage }).fields([
-  { name: "datasheet", maxCount: 3 },
-  { name: "images", maxCount: 3 },
+  { name: "datasheet", maxCount: 1 },
+  { name: "images", maxCount: 5 },
 ]);
 
 // =============================
