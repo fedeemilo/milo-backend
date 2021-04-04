@@ -111,13 +111,12 @@ module.exports = {
     let id = req.params.id;
     let repuesto = await Repuesto.findById(id);
 
-    console.log(req.files.datasheet)
-
+    // if there are images for deletion
     if (req.body.deleteImages && req.body.deleteImages.length) {
       if (req.body.deleteImages.length > 1) {
         req.body.deleteImages = req.body.deleteImages.split(",");
       } else {
-        req.body.deleteImages = req.body.deleteImages.split("");
+        req.body.deleteImages = [].concat(req.body.deleteImages);
       }
 
       let deleteImages = req.body.deleteImages;
@@ -129,6 +128,24 @@ module.exports = {
           if (image.public_id === public_id) {
             let index = repuesto.images.indexOf(image);
             repuesto.images.splice(index, 1);
+          }
+        }
+      }
+    }
+
+    // if there is a datasheet for deletion
+    if (req.body.deleteDatasheet) {
+      req.body.deleteDatasheet = [].concat(req.body.deleteDatasheet);
+
+      let deleteDatasheet = req.body.deleteDatasheet;
+
+      for (const public_id of deleteDatasheet) {
+        await cloudinary.v2.uploader.destroy(public_id);
+
+        for (const ds of repuesto.datasheet) {
+          if (ds.public_id === public_id) {
+            let index = repuesto.datasheet.indexOf(ds);
+            repuesto.datasheet.splice(index, 1);
           }
         }
       }
@@ -150,7 +167,7 @@ module.exports = {
       // check if there's a new datasheet
       if (req.files.datasheet) {
         if (!repuesto.datasheet.length) {
-          repuesto.datasheet = []
+          repuesto.datasheet = [];
         }
         for (const file of req.files.datasheet) {
           let ds = await cloudinary.v2.uploader.upload(file.path);
@@ -158,15 +175,14 @@ module.exports = {
             url: ds.secure_url,
             public_id: ds.public_id
           });
-        }       
+        }
       }
     }
+    
     repuesto.nombre = req.body.nombre;
     repuesto.descripcion = req.body.descripcion;
     repuesto.ubicacion = req.body.ubicacion;
     repuesto.cantidad = req.body.cantidad;
-
-    console.log(repuesto)
 
     try {
       await repuesto.save();
