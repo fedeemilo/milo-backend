@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
-const path = require("path");
+
 const {
   repuestosIndex,
   repuestoCreate,
@@ -21,7 +21,7 @@ let storage = multer.diskStorage({
 
 const upload = multer({ storage }).fields([
   { name: "datasheet", maxCount: 1 },
-  { name: "images", maxCount: 5 },
+  { name: "images", maxCount: 5 }
 ]);
 
 // =============================
@@ -30,13 +30,13 @@ const upload = multer({ storage }).fields([
 router.get("/", repuestosIndex);
 
 // =============================
-// Cargar un repuesto
+// Crear un repuesto
 // =============================
 
 router.post("/", upload, repuestoCreate);
 
 // =============================
-// Mostrar un repuesto por ID
+// Obtener un repuesto por ID
 // =============================
 router.get("/:id", getRepuestoById);
 

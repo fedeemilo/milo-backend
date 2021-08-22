@@ -23,4 +23,3 @@ if (process.env.NODE_ENV === "dev") {
 }
 
 process.env.URLDB = urlDB;
-// mongodb+srv://fedeemilo:P0oHSUgwHs3bwMAx@cluster0.9zuxs.mongodb.net/milosoft

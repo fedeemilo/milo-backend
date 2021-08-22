@@ -21,16 +21,24 @@ module.exports = {
   },
 
   async repuestoCreate(req, res) {
-    let body = req.body;
-    req.body.images = [];
-    req.body.datasheet = [];
+    let {
+      nombre,
+      descripcion,
+      cantidad,
+      ubicacion,
+      images,
+      datasheet
+    } = req.body;
+
+    images = [];
+    datasheet = [];
 
     if (req.files) {
       // handle images upload
       if (req.files.images) {
         for (let file of req.files.images) {
           let image = await cloudinary.v2.uploader.upload(file.path);
-          req.body.images.push({
+          images.push({
             url: image.secure_url,
             public_id: image.public_id
           });
@@ -41,7 +49,7 @@ module.exports = {
       if (req.files.datasheet) {
         for (let file of req.files.datasheet) {
           let upload = await cloudinary.v2.uploader.upload(file.path);
-          req.body.datasheet.push({
+          datasheet.push({
             url: upload.secure_url,
             public_id: upload.public_id
           });
@@ -50,15 +58,17 @@ module.exports = {
     }
 
     let repuesto = new Repuesto({
-      nombre: body.nombre,
-      descripcion: body.descripcion,
-      cantidad: body.cantidad,
-      ubicacion: body.ubicacion,
-      images: body.images,
-      datasheet: body.datasheet
+      nombre,
+      descripcion,
+      cantidad,
+      ubicacion,
+      images,
+      datasheet
     });
 
     repuesto.save((err, repuestoDB) => {
+      console.log(err);
+
       if (err) {
         return res.status(500).json({
           ok: false,
@@ -108,8 +118,11 @@ module.exports = {
   },
 
   async updateRepuestoById(req, res) {
-    let id = req.params.id;
+    let { id } = req.params;
     let repuesto = await Repuesto.findById(id);
+    let { nombre, descripcion, ubicacion, cantidad } = req.body;
+
+    console.log(req.body);
 
     // if there are images for deletion
     if (req.body.deleteImages && req.body.deleteImages.length) {
@@ -178,28 +191,36 @@ module.exports = {
         }
       }
     }
-    
-    repuesto.nombre = req.body.nombre;
-    repuesto.descripcion = req.body.descripcion;
-    repuesto.ubicacion = req.body.ubicacion;
-    repuesto.cantidad = req.body.cantidad;
 
-    try {
-      await repuesto.save();
+    repuesto.nombre = nombre;
+    repuesto.descripcion = descripcion;
+    repuesto.ubicacion = ubicacion;
+    repuesto.cantidad = cantidad;
+
+    repuesto.save((err, repuestoDB) => {
+      if (err) {
+        return res.status(500).json({
+          ok: false,
+          err
+        });
+      }
+
+      if (!repuestoDB) {
+        return res.status(400).json({
+          ok: false,
+          err
+        });
+      }
+
       res.json({
         ok: true,
-        repuesto
+        repuesto: repuestoDB
       });
-    } catch (error) {
-      res.json({
-        ok: false,
-        error
-      });
-    }
+    });
   },
 
   deleteRepuestoById(req, res) {
-    let id = req.params.id;
+    let { id } = req.params;
 
     Repuesto.findByIdAndRemove(id, (err, repuestoDB) => {
       if (err) {
