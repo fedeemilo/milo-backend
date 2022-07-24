@@ -15,8 +15,14 @@ module.exports = {
   },
 
   async clienteCreate(req, res) {
-    let { nombre, apellido, direccion, telefono, email, observaciones } =
-      req.body;
+    let {
+      nombre,
+      apellido,
+      direccion,
+      telefono,
+      email,
+      observaciones
+    } = req.body;
 
     let cliente = new Cliente({
       nombre,
@@ -79,8 +85,14 @@ module.exports = {
   async updateClienteById(req, res) {
     let { id } = req.params;
     let cliente = await Cliente.findById(id);
-    let { nombre, apellido, direccion, telefono, email, observaciones } =
-      req.body;
+    let {
+      nombre,
+      apellido,
+      direccion,
+      telefono,
+      email,
+      observaciones
+    } = req.body;
 
     cliente.nombre = nombre;
     cliente.apellido = apellido;

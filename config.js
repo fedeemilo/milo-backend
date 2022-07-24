@@ -17,7 +17,8 @@ process.env.NODE_ENV = process.env.NODE_ENV || "dev";
 let urlDB;
 
 if (process.env.NODE_ENV === "dev") {
-  urlDB = `mongodb://localhost:27017/milosoft`;
+  urlDB =
+      "mongodb+srv://fedeemilo:eukg3hKuZTEWMjc0@cluster0.9zuxs.mongodb.net/milosoft?retryWrites=true&w=majority";
 } else {
   urlDB = process.env.MONGODB_URI;
 }

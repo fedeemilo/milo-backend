@@ -121,18 +121,17 @@ module.exports = {
     let { id } = req.params;
     let repuesto = await Repuesto.findById(id);
     let { nombre, descripcion, ubicacion, cantidad } = req.body;
+    let deleteImages = req.body.deleteImages;
 
     console.log(req.body);
 
     // if there are images for deletion
-    if (req.body.deleteImages && req.body.deleteImages.length) {
-      if (req.body.deleteImages.length > 1) {
-        req.body.deleteImages = req.body.deleteImages.split(",");
+    if (deleteImages.length > 0) {
+      if (deleteImages.length > 1) {
+        deleteImages = deleteImages.split(",");
       } else {
-        req.body.deleteImages = [].concat(req.body.deleteImages);
+        deleteImages = [].concat(req.body.deleteImages);
       }
-
-      let deleteImages = req.body.deleteImages;
 
       for (const public_id of deleteImages) {
         await cloudinary.v2.uploader.destroy(public_id);

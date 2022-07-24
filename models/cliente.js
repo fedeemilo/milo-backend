@@ -29,7 +29,13 @@ let clienteSchema = new Schema({
   },
   observaciones: {
     type: String
-  }
+  },
+  reparaciones: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: 'Reparacion'
+      }
+  ]
 });
 
 module.exports = mongoose.model("Cliente", clienteSchema);

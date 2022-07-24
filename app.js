@@ -6,6 +6,7 @@ const cors = require("cors");
 
 const repuestosRoutes = require("./routes/repuestos");
 const clientesRoutes = require("./routes/clientes");
+const reparacionesRoutes = require("./routes/reparaciones");
 
 app.use(cors());
 
@@ -17,6 +18,7 @@ app.use(express.json());
 
 app.use("/repuestos", repuestosRoutes);
 app.use("/clientes", clientesRoutes);
+app.use("/reparaciones", reparacionesRoutes);
 
 // Connect to database
 mongoose.connect(
