@@ -3,20 +3,16 @@ const Schema = mongoose.Schema;
 
 let clienteSchema = new Schema({
   nombre: {
-    type: String,
-    required: [true, "El nombre del cliente es obligatorio"]
+    type: String
   },
   apellido: {
-    type: String,
-    required: [true, "El apellido del cliente es obligatorio"]
+    type: String
   },
   direccion: {
-    type: String,
-    required: [true, "La dirección del cliente es obligatoria"]
+    type: String
   },
   telefono: {
-    type: Number,
-    required: [true, "El teléfono del cliente es obligatorio"]
+    type: String,
   },
   email: {
     type: String,
