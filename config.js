@@ -16,7 +16,7 @@ let urlDB;
 
 if (process.env.NODE_ENV === "dev") {
     urlDB =
-        "mongodb+srv://fedeemilo:eukg3hKuZTEWMjc0@cluster0.9zuxs.mongodb.net/milosoft?retryWrites=true&w=majority";
+        "mongodb+srv://fedeemilo:JA3oryvdLLtts5Vo0@cluster0.9zuxs.mongodb.net/milosoft?retryWrites=true&w=majority";
 } else {
     urlDB = process.env.MONGODB_URI;
 }
