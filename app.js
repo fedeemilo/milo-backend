@@ -1,7 +1,6 @@
 require("./config");
 const express = require("express");
 const app = express();
-const mongoose = require("mongoose");
 const cors = require("cors");
 
 const repuestosRoutes = require("./routes/repuestos");
@@ -21,23 +20,8 @@ app.use("/clientes", clientesRoutes);
 app.use("/reparaciones", reparacionesRoutes);
 
 // Connect to database
-mongoose.connect(
-  process.env.URLDB,
-  {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useCreateIndex: true,
-    useFindAndModify: false
-  },
-  (err, res) => {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log("Connection to database SUCCESFULLY");
-    }
-  }
-);
+require("./db/connect");
 
 app.listen(process.env.PORT, () => {
-  console.log(`Server listening on port ${process.env.PORT}`);
+    console.log(`Server listening on port ${process.env.PORT}`);
 });

@@ -71,7 +71,7 @@ module.exports = {
 
             res.json({
                 ok: true,
-                repuesto: clienteDB
+                cliente: clienteDB
             });
         });
     },
@@ -125,7 +125,7 @@ module.exports = {
 
             res.json({
                 ok: true,
-                message: "Repuesto Borrado"
+                message: "Cliente Borrado"
             });
         });
     }
